@@ -21,11 +21,11 @@ export  const handleUserProfile=async(userAuth,additionalData)=>{
     const snapShot=await userRef.get()
 
     if(!snapShot.exists){
-  const {ddisplayName,email}=userAuth
+  const {displayName,email}=userAuth
  const timestamp=new Date()
         try{
             await userRef.set({
-            ddisplayName,
+             displayName,
             email,
             createDate:timestamp,
             ...additionalData

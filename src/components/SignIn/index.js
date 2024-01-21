@@ -1,16 +1,50 @@
-import React from "react";
+import React, { Component } from "react";
 import "./styles.scss";
 import Button from "../forms/Button";
-import {signInWithGoogle} from './../../firebase/utils' 
+import {signInWithGoogle,auth} from './../../firebase/utils' 
+import FormInput from "../forms/FormInput";
 
 
-const SignIn = () => {
 
+const initialState={
+  email:"",
+  password :""
 
- const handleSubmit=async e=>{
+}
+class SignIn extends Component {
+constructor(props){
+  super(props)
+  this.state={
+    ...initialState
+  }
+  this.handleChange=this.handleChange.bind(this)
+}
+
+handleChange(e){
+  const {name,value}=e.target
+  this.setState({
+    [name]:value
+  })
+
+}
+
+handleSubmit=async e=>{
   e.preventDefault()
+
+  const {email,password}=this.state
+
+  try {
+     await auth.signInWithEmailAndPassword(email,password)
+     this.setState({
+      ...initialState
+     })
+  } catch (error) {
+    
+  }
  }
 
+ render(){
+ const {email,password}=this.state
 
   return (
     <div className="signin">
@@ -18,7 +52,26 @@ const SignIn = () => {
         <h2>LogIn</h2>
 
         <div className="formWrap">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={this.handleSubmit}>
+          <FormInput
+          type="email"
+          name="email"
+          value={email}
+          placeholder="Email"
+          hadndleChange={this.handleChange}
+          />
+
+          <FormInput
+          type="password"
+          name="password"
+          value={password}
+          placeholder="password"
+          hadndleChange={this.handleChange}
+          />
+           <Button type="Submit">
+           LogIn
+           </Button>
+
             <div className="socialSignin">
               <div className="row">
                 <Button onClick={signInWithGoogle}>SignIn with google</Button>
@@ -30,5 +83,6 @@ const SignIn = () => {
     </div>
   );
 };
+}
 
 export default SignIn;
