@@ -3,7 +3,7 @@ import "./styles.scss";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 import {auth,handleUserProfile} from './../../firebase/utils'
-
+import AuthWrapper from "../AuthWrapper";
 
 
 const initialState={
@@ -57,11 +57,15 @@ try{
   render() {
  const {displayName,email,password,confirmPassword,errors}=this.state
 
+ const configAuthWrapper={
+  headline:"Registration"
+ }
   return(
-    <div className="signup">
-      <div className="wrap">
-        <h2>
-        Signup</h2>
+    <AuthWrapper {...configAuthWrapper}>
+     
+       
+        <div className="formWrap">
+
         {errors.length>0&&(
           <ul>
           {errors.map((err,index)=>{
@@ -73,7 +77,7 @@ try{
           })}
           </ul>
         )}
-        <div className="formWrap">
+
         <form onSubmit={this.handleSubmit}>
        
         <FormInput 
@@ -110,8 +114,7 @@ try{
         </Button>
         </form>
         </div>
-      </div>
-    </div>
+        </AuthWrapper>
   )
   }
   

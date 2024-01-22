@@ -3,10 +3,11 @@ import MainLayout from "./layouts/MainLayout";
 import Homepage from "./pages/Homepage";
 import HomepageLayout from "./layouts/HomepageLayout";
 import Registration from "./pages/Registration";
-import { Route, Routes, Navigate  } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import { auth,handleUserProfile } from "./firebase/utils";
+import { auth, handleUserProfile } from "./firebase/utils";
 import { Component } from "react";
+import Recovery from "./pages/Recovery";
 
 const initialState = {
   currentUser: null,
@@ -23,22 +24,22 @@ class App extends Component {
   authListener = null;
 
   componentDidMount() {
-    this.authListener = auth.onAuthStateChanged( async  (  userAuth) => {
-    if(userAuth){
-      const userRef= await handleUserProfile(userAuth)
-      userRef.onSnapshot(snapshot=>{
-        this.setState({
-          currentUser:{
-            id:snapshot.id,
-            ...snapshot.data()
-          }
-        })
-      })
-    }
+    this.authListener = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await handleUserProfile(userAuth);
+        userRef.onSnapshot((snapshot) => {
+          this.setState({
+            currentUser: {
+              id: snapshot.id,
+              ...snapshot.data(),
+            },
+          });
+        });
+      }
 
-    this.setState({
-      ...initialState
-    })
+      this.setState({
+        ...initialState,
+      });
     });
   }
 
@@ -63,27 +64,35 @@ class App extends Component {
           <Route
             path="/registration"
             element={
-              currentUser ?(
-                <Navigate to="/"/>
-              ):(
-              <MainLayout currentUser={currentUser}>
-                <Registration />
-              </MainLayout>
+              currentUser ? (
+                <Navigate to="/" />
+              ) : (
+                <MainLayout currentUser={currentUser}>
+                  <Registration />
+                </MainLayout>
               )
             }
           />
           <Route
-          path="/login"
-          element={
-            currentUser ? (
-              <Navigate to="/" />
-            ) : (
-              <MainLayout currentUser={currentUser}>
-                <Login/>
+            path="/login"
+            element={
+              currentUser ? (
+                <Navigate to="/" />
+              ) : (
+                <MainLayout currentUser={currentUser}>
+                  <Login />
+                </MainLayout>
+              )
+            }
+          />
+          <Route
+            path="/recovery"
+            element={
+              <MainLayout>
+                <Recovery />
               </MainLayout>
-            )
-          }
-        />
+            }
+          />
         </Routes>
       </div>
     );

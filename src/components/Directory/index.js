@@ -3,6 +3,7 @@ import React from 'react';
 import ShopMen from './../../assets/shopMens.jpg';
 import ShopWomen from './../../assets/shopWomens.jpg';
 import './styles.scss';
+import { Link } from 'react-router-dom';
 
 const Directory = props => {
   return (
@@ -14,9 +15,9 @@ const Directory = props => {
             backgroundImage: `url(${ShopWomen})`
           }}
         >
-          <a>
+          <Link>
             Shop Womens
-          </a>
+          </Link>
         </div>
         <div
           className="item"
@@ -24,9 +25,9 @@ const Directory = props => {
             backgroundImage: `url(${ShopMen})`
           }}
         >
-          <a>
+          <Link>
             Shop Mens
-          </a>
+          </Link>
         </div>
       </div>
     </div>
