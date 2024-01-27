@@ -104,59 +104,54 @@
 
 // export default  EmailPassword;
 
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import AuthWrapper from "./../AuthWrapper";
 import FormInput from "./../forms/FormInput";
 import Button from "./../forms/Button";
-import { auth } from './../../firebase/utils';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch,useSelector } from "react-redux";
+import { resetAllAuthForms, resetPassword } from "../../redux/User/user.actions";
+import { useNavigate } from "react-router-dom";
 
-const initialState = {
-  email: "",
-  errors:[]
-};
 
-class EmailPassword extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...initialState
-    };
-    this.handleChange = this.handleChange.bind(this);
-  }
 
-  handleChange(e) {
-    const { name, value } = e.target;
-    this.setState({
-      [name]: value
-    });
-  }
 
-  handleSubmit = async (e) => {
+
+const mapState=({user})=>({
+  resetPasswordSuccess:user.resetPasswordSuccess,
+  resetPasswordError:user.resetPasswordError
+})
+
+const  EmailPassword =props=> {
+  const {resetPasswordSuccess,resetPasswordError}=useSelector(mapState)
+  const dispatch=useDispatch()
+  const [email,setEmail]=useState('')
+  const [errors,setErrors]=useState([])
+  const navigate = useNavigate();
+
+
+useEffect(()=>{
+if(resetPasswordSuccess){
+  dispatch(resetAllAuthForms())
+  navigate("/login")
+}
+},[resetPasswordSuccess])
+
+
+useEffect(()=>{
+if(Array.isArray(resetPasswordError) && resetPasswordError.length>0){
+  setErrors(resetPasswordError)
+}
+
+},[resetPasswordError])
+
+  const  handleSubmit = (e) => {
     e.preventDefault();
-
-    try {
-      const { email } = this.state;
-      const config = {
-        url: "http://localhost:3000/login"
-      };
-
-      await auth.sendPasswordResetEmail(email, config).then(() => {
-        // Access the history object from props
-        this.props.navigate('/login');
-      }).catch(() => {
-      const err=['An email was send ']
-      this.setState({
-        errors:err
-      })
-      });
-    } catch (error) {
-      console.error("An error occurred:", error);
-    }
+ dispatch(resetPassword({email}))
+ 
   };
 
-  render() {
-    const { email,errors } = this.state;
+ 
+
 
     const configAuthWrapper = {
       headline: "Email Password",
@@ -176,13 +171,13 @@ class EmailPassword extends Component {
           })}
           </ul>
         )}
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={handleSubmit}>
             <FormInput
               type="email"
               name="email"
               value={email}
               placeholder="Email"
-              onChange={this.handleChange}
+              onChange={e=>setEmail(e.target.value)}
             />
             <Button type="submit">
               Email Password
@@ -192,7 +187,7 @@ class EmailPassword extends Component {
       </AuthWrapper>
     );
   }
-}
+
 
 export default EmailPassword;
 
