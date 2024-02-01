@@ -14,7 +14,6 @@
 
 // import WithAuth from "./hoc/withAuth";
 
-
 // const App = (props) => {
 //   const { setCurrentUser, currentUser } = props;
 
@@ -73,7 +72,7 @@
 //             )
 //           }
 //         />
-       
+
 //         <Route
 //         path="/recovery"
 //         element={
@@ -107,13 +106,12 @@
 
 // export default connect(mapStateToProps, mapDispatchToProps)(App);
 
-
 import React, { useEffect } from "react";
 import "./default.scss";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Route, Routes, Navigate } from "react-router-dom";
-import { auth, handleUserProfile } from "./firebase/utils";
-import { setCurrentUser } from "./redux/User/user.actions";
+
+import { checkUserSession } from "./redux/User/user.actions";
 import MainLayout from "./layouts/MainLayout";
 import Homepage from "./pages/Homepage";
 import HomepageLayout from "./layouts/HomepageLayout";
@@ -121,34 +119,25 @@ import Registration from "./pages/Registration";
 import Login from "./pages/Login";
 import Recovery from "./pages/Recovery";
 import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
+import WithAdminAth from "./hoc/withAdminAuth";
+import WithAuth from "./hoc/withAuth";
+import AdminToolbar from "./components/AdminToolbar";
+import AdminLayout from "./layouts/AdminLayout";
+import DashBoardLayout from "./layouts/DashboardLayout";
 
 
 const App = () => {
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.user.currentUser);
 
+  // 41:17
   useEffect(() => {
-    const authListener = auth.onAuthStateChanged(async (userAuth) => {
-      if (userAuth) {
-        const userRef = await handleUserProfile(userAuth);
-        userRef.onSnapshot((snapshot) => {
-          dispatch(setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data(),
-          }));
-        });
-      }
-
-      dispatch(setCurrentUser(userAuth));
-    });
-
-    return () => {
-      authListener();
-    };
-  }, [dispatch]);
+    dispatch(checkUserSession());
+  }, []);
 
   return (
     <div className="App">
+    <AdminToolbar/>
       <Routes>
         <Route
           path="/"
@@ -161,22 +150,17 @@ const App = () => {
         <Route
           path="/registration"
           element={
-           
-            
-              <MainLayout>
-                <Registration />
-              </MainLayout>
-           
+            <MainLayout>
+              <Registration />
+            </MainLayout>
           }
         />
         <Route
           path="/login"
           element={
-            
-              <MainLayout>
-                <Login />
-              </MainLayout>
-            
+            <MainLayout>
+              <Login />
+            </MainLayout>
           }
         />
         <Route
@@ -188,25 +172,29 @@ const App = () => {
           }
         />
         <Route
-          path="/dashboard"
+          path="/admin"
           element={
-            
-              <MainLayout>
-                <Dashboard />
-              </MainLayout>
-          
+            <WithAdminAth>
+              <AdminLayout>
+                <Admin />
+              </AdminLayout>
+            </WithAdminAth>
           }
         />
+        <Route
+          path="/dashboard"
+          element={
+            <WithAuth>
+              <DashBoardLayout>
+                <Dashboard />
+              </DashBoardLayout>
+            </WithAuth>
+          }
+        />
+        
       </Routes>
     </div>
   );
 };
 
 export default App;
-
-
-
-
-
-
-

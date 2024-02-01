@@ -1,12 +1,10 @@
-import React from 'react'
-import "./styles.scss"
-
-const Dashboard = () => {
+const Dashboard = props => {
   return (
     <h1>
-      You are logged in
+      Your logged in!
+      Welcome to your account
     </h1>
-  )
+  );
 }
 
 export default Dashboard
